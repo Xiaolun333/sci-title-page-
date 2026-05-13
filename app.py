@@ -30,17 +30,45 @@ def extract_docx_text(filepath):
 
 
 def extract_doc_text(filepath):
-    """Extract text from .doc file using macOS textutil."""
+    """Extract text from .doc file. Tries textutil (macOS) then antiword/LibreOffice (Linux)."""
     with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as tmp:
         tmp_path = tmp.name
     try:
-        subprocess.run(
-            ["textutil", "-convert", "txt", filepath, "-output", tmp_path],
-            check=True, capture_output=True, timeout=30,
+        # macOS
+        if subprocess.run(["which", "textutil"], capture_output=True).returncode == 0:
+            subprocess.run(
+                ["textutil", "-convert", "txt", filepath, "-output", tmp_path],
+                check=True, capture_output=True, timeout=30,
+            )
+            with open(tmp_path, "r", encoding="utf-8", errors="replace") as f:
+                text = f.read()
+            return text
+
+        # Linux: try antiword
+        if subprocess.run(["which", "antiword"], capture_output=True).returncode == 0:
+            result = subprocess.run(["antiword", filepath], capture_output=True, text=True, timeout=30)
+            if result.returncode == 0:
+                return result.stdout
+
+        # Linux: try LibreOffice
+        if subprocess.run(["which", "soffice"], capture_output=True).returncode == 0:
+            outdir = os.path.dirname(tmp_path)
+            subprocess.run(
+                ["soffice", "--headless", "--convert-to", "txt:Text", "--outdir", outdir, filepath],
+                check=True, capture_output=True, timeout=30,
+            )
+            base = os.path.splitext(os.path.basename(filepath))[0]
+            txt_file = os.path.join(outdir, base + ".txt")
+            if os.path.exists(txt_file):
+                with open(txt_file, "r", encoding="utf-8", errors="replace") as f:
+                    text = f.read()
+                os.unlink(txt_file)
+                return text
+
+        raise RuntimeError(
+            "Server is Linux and cannot extract .doc files. "
+            "Please convert to .docx format before uploading."
         )
-        with open(tmp_path, "r", encoding="utf-8", errors="replace") as f:
-            text = f.read()
-        return text
     finally:
         if os.path.exists(tmp_path):
             os.unlink(tmp_path)

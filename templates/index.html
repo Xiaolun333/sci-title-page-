@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中英格式转化 — Title Page Generator</title>
+<link rel="stylesheet" href="/static/style.css?v=17">
+</head>
+<body>
+
+<main class="main-content" style="margin-left:0;">
+    <!-- Title Page Workspace -->
+    <div class="workspace" id="tool-title-page" style="padding:20px 24px;">
+        <!-- Left: Upload/Paste Helper -->
+        <div class="panel panel-input">
+            <div class="panel-header"><h3>📎 辅助预填（可选）</h3></div>
+            <p class="panel-hint">上传 .doc/.docx 或粘贴文本，解析成功后自动填入右侧表单。格式不标准时可跳过，直接在右侧手动填写。</p>
+            <div class="upload-area" id="upload-area">
+                <input type="file" id="file-input" accept=".doc,.docx" hidden />
+                <div class="upload-zone" id="upload-zone">
+                    <span class="upload-icon">&#x1F4C4;</span>
+                    <span>拖拽 .doc / .docx 文件到此处</span>
+                    <span class="upload-hint">或 <button type="button" class="btn-link" id="browse-btn">点击选择文件</button></span>
+                </div>
+                <div id="file-info" style="display:none;"></div>
+            </div>
+            <div class="or-divider"><span>或 手动粘贴</span></div>
+            <textarea id="raw-input" placeholder="粘贴中文信息后点击解析..."></textarea>
+            <button id="parse-btn" class="btn btn-primary"><span>&#x2699;</span> 解析并填入表单</button>
+            <span id="parse-status" class="status"></span>
+        </div>
+        <!-- Right: Form -->
+        <div class="panel panel-form" id="form-panel">
+            <div class="panel-header"><h3>📝 Title Page 信息</h3></div>
+            <div class="form-section">
+                <label>英文题目 Title <span class="required">*</span></label>
+                <input type="text" id="title-input" placeholder="手动输入英文题目..." />
+            </div>
+            <div class="form-section">
+                <label>输出文件名 Output Filename</label>
+                <input type="text" id="filename-input" placeholder="通讯作者名字+订单编号" />
+                <span class="hint">例：Yaru Zhao--lty0429011</span>
+            </div>
+            <div class="form-section">
+                <label>作者 Authors</label>
+                <div id="authors-container"></div>
+                <button id="add-author-btn" class="btn btn-sm">+ 添加作者</button>
+            </div>
+            <div class="form-section">
+                <label>机构 Affiliations</label>
+                <div id="affiliations-container"></div>
+                <button id="add-aff-btn" class="btn btn-sm">+ 添加机构</button>
+            </div>
+            <div class="form-section">
+                <label>课题信息 Fund Information（可选）</label>
+                <textarea id="fund-input" rows="3" placeholder="每行一条课题信息..."></textarea>
+            </div>
+            <button id="generate-btn" class="btn btn-generate">生成 &amp; 下载 .docx</button>
+            <span id="gen-status" class="status"></span>
+        </div>
+    </div>
+</main>
+
+<script src="/static/script.js?v=17"></script>
+</body>
+</html>
